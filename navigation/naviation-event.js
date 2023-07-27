@@ -51,3 +51,19 @@ export function callCaptureEventListeners(e) {
     }
   }
 }
+
+function patchFn(updateState, methodName) {
+  return function () {
+    const urlBefore = window.location.href
+    const r = updateState.apply(this, arguments)
+    const urlAfter = window.localStorage.href
+    if (urlAfter !== urlBefore) {
+      // 手动派发popstate事件
+      window.dispatchEvent(new PopStateEvent("popstate"))
+    }
+    return r
+  }
+}
+window.history.pushState = patchFn(window.history.pushState, 'pushState')
+
+window.history.replaceState = patchFn(window.history.replaceState, 'replaceState')

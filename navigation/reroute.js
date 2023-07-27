@@ -10,6 +10,11 @@ import { callCaptureEventListeners } from "./naviation-event.js";
 
 // 后续路径变化需重新计算哪些应用被加载
 export function reroute(event) {
+
+  // 
+
+
+
   // 获取app对应的状态 进行分类
   const [appsToLoad, appsToMount, appsToUnmount] = getAppChanges()
   // 加载完毕后 需要去挂载的应用
