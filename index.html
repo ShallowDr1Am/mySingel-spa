@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>singel-spa</title>
+</head>
+
+<body>
+  <div>123</div>
+  
+  <script type="module">
+    import { registerApplication, start } from './singel-spa/singel-spa.js'
+    // debugger
+    let app1 = {
+      bootstrap: async () => console.log('app1 boot'),
+      mount: async () => {
+        console.log('app1 mount')
+      },
+      unmount: async () => {
+        console.log('app1 unmount')
+      }
+    }
+
+    let app2 = {
+      bootstrap: async () => console.log('app2 boot'),
+      mount: async () => {
+        console.log('app2 mount')
+      },
+      unmount: async () => {
+        console.log('app2 unmount')
+      }
+    }
+    // 注册即时看一下路径是否匹配,如果匹配则"加载"对应的应用
+    registerApplication('a', async () => app1, (location) => location.hash.startsWith('#/a'), {})
+    registerApplication('b', async () => app1, (location) => location.hash.startsWith('#/b'), {})
+
+    start()
+  </script>
+</body>
+
+</html>
