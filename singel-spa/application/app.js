@@ -17,5 +17,5 @@ export function registerApplication(appName, loadApp, activeWhen, customProps) {
 
   // 需要检查哪些应用要被加载，还有哪些应用要被移除
 
-  reroute(apps) // 重写路由
+  reroute() // 重写路由
 }

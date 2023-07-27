@@ -1,4 +1,4 @@
-import { BOOTSTRAPING, MOUNTED, NOT_MOUNTED } from "../singel-spa/application/app.helpers.js"
+import { MOUNTED, NOT_MOUNTED } from "../singel-spa/application/app.helpers.js"
 
 export function toMountPromise(app) {
   return Promise.resolve().then(() => {

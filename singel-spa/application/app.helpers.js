@@ -1,3 +1,4 @@
+import { apps } from "./app.js"
 
 // app 状态
 export const NOT_LOADED = 'NOT_LOADED' // 没有被加载
@@ -28,13 +29,12 @@ export function shouldBeActive(app) {
   return app.activeWhen(window.location)
 }
 
-export function getAppChanges(apps) {
+export function getAppChanges() {
   const appsToLoad = []
   const appsToMount = []
   const appsToUnmount = []
-
+  // console.log(apps)
   apps.forEach((app) => {
-
     let appShouldBeActive = shouldBeActive(app)
     switch (app.status) {
       case NOT_LOADED:

@@ -8,8 +8,7 @@
 </head>
 
 <body>
-  <div>123</div>
-  
+
   <script type="module">
     import { registerApplication, start } from './singel-spa/singel-spa.js'
     // debugger
@@ -33,9 +32,8 @@
       }
     }
     // 注册即时看一下路径是否匹配,如果匹配则"加载"对应的应用
-    registerApplication('a', async () => app1, (location) => location.hash.startsWith('#/a'), {})
-    registerApplication('b', async () => app1, (location) => location.hash.startsWith('#/b'), {})
-
+    registerApplication('a', async () => app1, (location) => location.hash.startsWith('#/a'), { a: 1 })
+    registerApplication('b', async () => app2, (location) => location.hash.startsWith('#/b'), { b: 1 })
     start()
   </script>
 </body>
