@@ -8,7 +8,8 @@
 </head>
 
 <body>
-
+  <a href="#/a">a</a>
+  <a href="#/b">b</a>
   <script type="module">
     import { registerApplication, start } from './singel-spa/singel-spa.js'
     // debugger
@@ -25,7 +26,13 @@
     let app2 = {
       bootstrap: async () => console.log('app2 boot'),
       mount: async () => {
-        console.log('app2 mount')
+        // console.log('app2 mount')
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            console.log('app2 mount')
+            resolve()
+          }, 1000)
+        })
       },
       unmount: async () => {
         console.log('app2 unmount')
@@ -35,6 +42,11 @@
     registerApplication('a', async () => app1, (location) => location.hash.startsWith('#/a'), { a: 1 })
     registerApplication('b', async () => app2, (location) => location.hash.startsWith('#/b'), { b: 1 })
     start()
+
+    // 这个监控操作 应该被延迟到 当应用挂载完毕后在执行
+    window.addEventListener('hashchange', function () {
+      console.log(window.location.hash)
+    })
   </script>
 </body>
 

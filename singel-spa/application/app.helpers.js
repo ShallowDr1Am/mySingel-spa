@@ -58,6 +58,8 @@ export function getAppChanges() {
           appsToUnmount.push(app)
         }
         break
+      default:
+        break;
     }
   })
 

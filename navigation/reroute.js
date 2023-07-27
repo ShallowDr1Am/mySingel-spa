@@ -5,10 +5,11 @@ import { toUnmountPromise } from "../lifecycles/unmount.js";
 import { getAppChanges, shouldBeActive } from "../singel-spa/application/app.helpers.js";
 import { started } from "../singel-spa/start.js";
 import './naviation-event.js'
+import { callCaptureEventListeners } from "./naviation-event.js";
 
 
 // 后续路径变化需重新计算哪些应用被加载
-export function reroute() {
+export function reroute(event) {
   // 获取app对应的状态 进行分类
   const [appsToLoad, appsToMount, appsToUnmount] = getAppChanges()
   // 加载完毕后 需要去挂载的应用
@@ -20,9 +21,13 @@ export function reroute() {
 
   // 先拿到应用去加载 ->
   return loadApps()
+
+  function callEventListener() {
+    callCaptureEventListeners(event)
+  }
   function loadApps() {
     // 应用的加载
-    return Promise.all(appsToLoad.map(toLoadPromise))
+    return Promise.all(appsToLoad.map(toLoadPromise)).then(callEventListener)
   }
 
   function performAppChange() {
@@ -34,10 +39,10 @@ export function reroute() {
     // 加载需要的应用(可能这个应用在注册的时候已经被加载)
     const loadMountPromises = Promise.all(appsToLoad.map(app => toLoadPromise(app).then(app => {
       // 当应用加载完毕后，需要启动和挂载，但是要保证挂载钱，先卸载掉之前的应用
-      tryBootstrapAndMount(app, unMountAllPromises) // 这里是保证卸载
+      return tryBootstrapAndMount(app, unMountAllPromises) // 这里是保证卸载
     })))
 
-    // const MountPromises = Promise.all(appsToMount.map(app => tryBootstrapAndMount(app, unMountAllPromises)))
+    const MountPromises = Promise.all(appsToMount.map(app => tryBootstrapAndMount(app, unMountAllPromises)))
 
     function tryBootstrapAndMount(app, unMountAllPromises) {
       if (shouldBeActive(app)) {
@@ -45,5 +50,9 @@ export function reroute() {
         return toBootstrapPromise(app).then(app => unMountAllPromises.then(() => toMountPromise(app)))
       }
     }
+
+    return Promise.all([loadMountPromises, MountPromises]).then(() => { // 卸载完毕后
+      callEventListener()
+    })
   }
 }

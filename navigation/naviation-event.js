@@ -23,8 +23,31 @@ const originalAddEventListener = window.addEventListener
 const originalRemoveEventListener = window.removeEventListener
 
 window.addEventListener = function (eventName, callback) {
+  // 有要监听的函数事件，函数不能重复
   if (listeningTo.includes(eventName) && !capturedEventListeners[eventName].some(listener => listener === callback)) {
     capturedEventListeners[eventName].push(callback)
+    return
   }
   return originalAddEventListener.apply(this, arguments)
+}
+
+window.removeEventListener = function (eventName, callback) {
+  // 有要监听的函数事件，函数不能重复
+  if (listeningTo.includes(eventName)) {
+    capturedEventListeners[eventName] = capturedEventListeners[eventName].filter(fn => fn !== callback)
+    return
+  }
+  return originalRemoveEventListener.apply(this, arguments)
+}
+
+
+export function callCaptureEventListeners(e) {
+  if (e) {
+    const eventType = e[0].type
+    if (listeningTo.includes(listeningTo)) {
+      capturedEventListeners[eventType].forEach(listener => {
+        listener.apply(this, e)
+      });
+    }
+  }
 }
