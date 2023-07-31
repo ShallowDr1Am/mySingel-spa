@@ -9,17 +9,27 @@ import { callCaptureEventListeners } from "./naviation-event.js";
 
 
 // 后续路径变化需重新计算哪些应用被加载
+
+let appChangeUnderWay = false
+let peopleWaitingOnAppChange = []
 export function reroute(event) {
 
-  // 
+  // 多次调用，数组缓存
 
-
+  if (appChangeUnderWay) {
+    return new Promise((resolve, reject) => {
+      peopleWaitingOnAppChange.push({
+        resolve, reject
+      })
+    })
+  }
 
   // 获取app对应的状态 进行分类
   const [appsToLoad, appsToMount, appsToUnmount] = getAppChanges()
   // 加载完毕后 需要去挂载的应用
 
   if (started) {
+    appChangeUnderWay = true
     // 用户调用了start方法,需要处理当前应用
     return performAppChange()
   }
@@ -58,6 +68,7 @@ export function reroute(event) {
 
     return Promise.all([loadMountPromises, MountPromises]).then(() => { // 卸载完毕后
       callEventListener()
+      appChangeUnderWay = false
     })
   }
 }

@@ -47,6 +47,34 @@
     window.addEventListener('hashchange', function () {
       console.log(window.location.hash)
     })
+
+
+    class ProxySandbox {
+      constructor() {
+        this.running = false
+        const fakeWindow = Object.create(null)
+        this.proxy = new Proxy(fakeWindow, {
+          get: (target, key) => {
+            return key in target ? target[key] : window[key]
+          },
+          set: (target, key, value) => {
+            if (this.running) {
+              target[key] = value
+            }
+            return true
+          }
+        })
+        // 修改不再操作window属性
+      }
+      active() {
+        // 只有激活装填才能进行修改window属性
+        if (!this.running) this.running = true
+      }
+      inactive() {
+        this.running = false
+      }
+      // 每个子应用都会生成一个sandbox
+    }
   </script>
 </body>
 
